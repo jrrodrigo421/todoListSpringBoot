@@ -81,7 +81,7 @@ public class TaskController {
     // taskModel.setIdUser((UUID) idUser);
     // taskModel.setId(id);
     var taskUpdate = this.iTaskRepository.save(task);
-    return ResponseEntity.ok().body(this.iTaskRepository.save(taskUpdate));
+    return ResponseEntity.ok().body(taskUpdate);
 
   }
 
