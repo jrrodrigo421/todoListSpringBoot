@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.rodrigolopes.todolist.task.TaskModel;
 import com.rodrigolopes.todolist.user.IUserRepository;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
@@ -40,46 +41,54 @@ public class filterTaskAuth extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
-    // pegar autenticação (usuario e senha)
+    var serveletPath = request.getServletPath();
 
-    var authorization = request.getHeader("Authorization");
+    if (serveletPath.equals("/tasks/")) {
+      // pegar autenticação (usuario e senha)
 
-    System.out.println("\n IMPRIMINDO authorization: \n" + authorization);
+      var authorization = request.getHeader("Authorization");
 
-    var newAuth = authorization.substring("Basic".length()).trim();
+      System.out.println("\n IMPRIMINDO authorization: \n" + authorization);
 
-    System.out.println("\n IMPRIMIDO newAuth: \n" + newAuth);
+      var newAuth = authorization.substring("Basic".length()).trim();
 
-    byte[] authDecode = Base64.getDecoder().decode(newAuth);
+      System.out.println("\n IMPRIMIDO newAuth: \n" + newAuth);
 
-    System.out.println("IMPRINDO authDecode: \n" + authDecode);
+      byte[] authDecode = Base64.getDecoder().decode(newAuth);
 
-    var authString = new String(authDecode);
+      System.out.println("IMPRINDO authDecode: \n" + authDecode);
 
-    System.out.println("IMPRIMINDO authString" + authString);
+      var authString = new String(authDecode);
 
-    String[] credentials = authString.split(":");
-    String username = credentials[0];
-    String password = credentials[1];
+      System.out.println("IMPRIMINDO authString" + authString);
 
-    System.out.println("username: " + username);
-    System.out.println("password: " + password);
+      String[] credentials = authString.split(":");
+      String username = credentials[0];
+      String password = credentials[1];
 
-    // validar usuario
+      System.out.println("username: " + username);
+      System.out.println("password: " + password);
 
-    var validateUSer = this.iUserRepository.findByUsername(username);
+      // validar usuario
 
-    if (validateUSer == null) {
-      response.sendError(401, "Usuário sem autorização");
-    } else {
-      // validar senha
-      var passwordVerify = BCrypt.verifyer().verify(password.toCharArray(), validateUSer.getPassword());
-      if (passwordVerify.verified) {
-        filterChain.doFilter(request, response);
+      var validateUSer = this.iUserRepository.findByUsername(username);
+
+      if (validateUSer == null) {
+        response.sendError(401, "Usuário sem autorização");
       } else {
-        response.sendError(403);
+        // validar senha
+        var passwordVerify = BCrypt.verifyer().verify(password.toCharArray(), validateUSer.getPassword());
+        if (passwordVerify.verified) {
+          request.setAttribute("idUser", validateUSer.getId());
+          filterChain.doFilter(request, response);
+        } else {
+          response.sendError(403);
+        }
+
       }
 
+    } else {
+      filterChain.doFilter(request, response);
     }
 
   }
