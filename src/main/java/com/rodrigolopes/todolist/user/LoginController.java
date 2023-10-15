@@ -12,7 +12,7 @@ import at.favre.lib.crypto.bcrypt.BCrypt;
 
 @RestController
 @RequestMapping("/login")
-public class LoginControlle {
+public class LoginController {
 
   @Autowired
   private IUserRepository userRepository;
@@ -31,15 +31,15 @@ public class LoginControlle {
         user.getPassword()).verified) {
       // As credenciais são válidas; você pode gerar um token JWT e incluí-lo na
       // resposta
-      String token = generateToken(user);
+      // String token = generateToken(user);
       return ResponseEntity.ok(user);
     } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
     }
   }
 
-  private String generateToken(UserModel user) {
-    return "teste";
-  }
+  // private String generateToken(UserModel user) {
+  // return "teste";
+  // }
 
 }
