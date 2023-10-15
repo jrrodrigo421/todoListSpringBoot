@@ -43,6 +43,20 @@ public class filterTaskAuth extends OncePerRequestFilter {
 
     var serveletPath = request.getServletPath();
 
+    System.out.println("IMPRIMINDO serveletPath: " + serveletPath);
+
+    // if (serveletPath.startsWith("/login")) {
+
+    // System.out.println("CHEGOU AQUI : ");
+
+    // // if (!response.isCommitted()) {
+    // // response.sendError(401, "Usuário sem autorização");
+
+    // // }
+    // filterChain.doFilter(request, response);
+
+    // }
+
     if (serveletPath.startsWith("/tasks/")) {
       // pegar autenticação (usuario e senha)
 
